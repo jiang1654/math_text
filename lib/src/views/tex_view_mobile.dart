@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:flutter_tex/src/utils/core_utils.dart';
@@ -31,11 +33,13 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
                     _pageLoaded = true;
                     _initTeXView();
                   },
-                  initialUrl: "packages/flutter_tex/js/${widget.renderingEngine?.name ?? 'katex'}/index.html",
+                  initialUrl:
+                      "packages/flutter_tex/js/${widget.renderingEngine?.name ?? 'katex'}/index.html",
                   onWebViewCreated: (controller) {
                     _controller = controller;
                   },
-                  initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+                  initialMediaPlaybackPolicy:
+                      AutoMediaPlaybackPolicy.always_allow,
                   backgroundColor: Colors.transparent,
                   allowsInlineMediaPlayback: true,
                   javascriptChannels: {
@@ -44,7 +48,7 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
                         onMessageReceived: (jm) async {
                           double height = double.parse(jm.message);
                           if (_height.value != height) {
-                            _height.value=height;
+                            _height.value = height;
                           }
                           widget.onRenderFinished?.call(height);
                         }),
@@ -52,6 +56,16 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
                         name: 'OnTapCallback',
                         onMessageReceived: (jm) {
                           widget.child.onTapCallback(jm.message);
+                        }),
+                    JavascriptChannel(
+                        name: 'ImageClick',
+                        onMessageReceived: (jm) {
+                          Map<String, dynamic> data = jsonDecode(jm.message);
+                          List<String> images =
+                              List<String>.from(data['images']);
+                          int index = data['index'];
+                          String url = data['url'];
+                          widget.imageCallBack?.call(index, url, images);
                         })
                   },
                   javascriptMode: JavascriptMode.unrestricted,
@@ -60,15 +74,14 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
               Visibility(
                   visible: widget.loadingWidgetBuilder?.call(context) != null
                       ? _height.value == minHeight
-                      ? true
-                      : false
+                          ? true
+                          : false
                       : false,
-                  child: widget.loadingWidgetBuilder?.call(context) ?? const SizedBox.shrink()
-              )
+                  child: widget.loadingWidgetBuilder?.call(context) ??
+                      const SizedBox.shrink())
             ],
           );
-        }
-    );
+        });
   }
 
   void _initTeXView() {

@@ -23,6 +23,12 @@ class TeXView extends StatefulWidget {
   /// Show a loading widget before rendering completes.
   final Widget Function(BuildContext context)? loadingWidgetBuilder;
 
+  /// 图片点击回调
+  ///[index] HTML 中图片索引
+  /// [url] 当前点击的图片的地址
+  /// [images] HTML中所有的图片的集合
+  final Function(int index, String url, List<String> images)? imageCallBack;
+
   /// Callback when TEX rendering finishes.
   final Function(double height)? onRenderFinished;
 
@@ -35,6 +41,7 @@ class TeXView extends StatefulWidget {
     this.loadingWidgetBuilder,
     this.onRenderFinished,
     this.renderingEngine,
+    this.imageCallBack,
   }) : super(key: key);
 
   @override
