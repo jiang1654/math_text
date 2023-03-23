@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:flutter_tex/src/utils/core_utils.dart';
@@ -42,6 +44,12 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
                       AutoMediaPlaybackPolicy.always_allow,
                   backgroundColor: Colors.transparent,
                   allowsInlineMediaPlayback: true,
+                  gestureRecognizers: {
+                    Factory<HorizontalDragGestureRecognizer>(
+                        () => HorizontalDragGestureRecognizer()),
+                    Factory<ScaleGestureRecognizer>(
+                        () => ScaleGestureRecognizer()),
+                  },
                   javascriptChannels: {
                     JavascriptChannel(
                         name: 'TeXViewRenderedCallback',
